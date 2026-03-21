@@ -124,3 +124,20 @@ $bg: #f6f7fb;
 .login {
   @extend .auth-form;
 }
+
+.auth-switch {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 0.9rem;
+  color: #555;
+
+  a {
+    color: #4c6ef5;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
