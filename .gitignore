@@ -41,5 +41,4 @@ Desktop.ini
 *.local
 firebase.rules
 
-# Backend
-backend/.config/db.js
+

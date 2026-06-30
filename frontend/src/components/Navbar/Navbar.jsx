@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useAuthContext } from '../../context/AuthContext'
 import { useLogout } from '../../hooks/useLogout'
-import { useCartStore } from '../Cart/Cart.jsx'
+import { useCartStore } from '../../store/Cart'
 import './Navbar.scss'
 
 const Navbar = () => {

@@ -13,23 +13,17 @@ const Cart = () => {
   const [clearing, setClearing] = useState(false)
 
   const handleImgError = (id) => {
-    setFailedImgs((prev) => new Set(prev).add(id))
+    setFailedImgs(prev => new Set(prev).add(id))
   }
 
   const handleRemove = (id) => {
     setRemovingId(id)
-    setTimeout(() => {
-      removeFromCart(id)
-      setRemovingId(null)
-    }, 400)
+    setTimeout(() => { removeFromCart(id); setRemovingId(null) }, 400)
   }
 
   const handleClear = () => {
     setClearing(true)
-    setTimeout(() => {
-      clearCart()
-      setClearing(false)
-    }, 500)
+    setTimeout(() => { clearCart(); setClearing(false) }, 500)
   }
 
   if (items.length === 0) {
@@ -42,9 +36,7 @@ const Cart = () => {
         <div className="cart__empty-content">
           <div className="cart__empty-icon">🛒</div>
           <div className="cart__empty-dust">
-            <span />
-            <span />
-            <span />
+            <span /><span /><span />
           </div>
           <h2>Your Cart is Empty</h2>
           <p>Browse newspapers and add them to your cart.</p>
@@ -65,7 +57,7 @@ const Cart = () => {
       </div>
 
       <div className="cart__wrap">
-        <div className="cart__header">
+        <header className="cart__header">
           <div className="cart__header-left">
             <div className="cart__header-icon">🛍️</div>
             <div>
@@ -77,17 +69,17 @@ const Cart = () => {
             <span className="cart__count-num">{getTotalCount()}</span>
             <span className="cart__count-label">items</span>
           </span>
-        </div>
+        </header>
 
         <div className={`cart__items ${clearing ? 'cart__items--clearing' : ''}`}>
           {items.map((item, i) => (
-            <div 
-              key={item._id} 
+            <div
+              key={item._id}
               className={`cart__item ${removingId === item._id ? 'cart__item--removing' : ''}`}
               style={{ animationDelay: `${i * 0.08}s` }}
             >
               <div className="cart__item-glow" />
-              
+
               <div className="cart__item-img-wrap">
                 <img
                   src={failedImgs.has(item._id) ? FALLBACK_IMG : item.image}
@@ -105,25 +97,18 @@ const Cart = () => {
               </div>
 
               <div className="cart__item-controls">
-                <button 
-                  className="qty-btn qty-btn--minus" 
+                <button
+                  className="qty-btn qty-btn--minus"
                   onClick={() => item.quantity > 1 ? decreaseQty(item._id) : handleRemove(item._id)}
-                >
-                  <span>−</span>
-                </button>
+                ><span>−</span></button>
                 <span className="qty" key={item.quantity}>{item.quantity}</span>
-                <button 
-                  className="qty-btn qty-btn--plus" 
+                <button
+                  className="qty-btn qty-btn--plus"
                   onClick={() => addToCart(item)}
-                >
-                  <span>+</span>
-                </button>
+                ><span>+</span></button>
               </div>
 
-              <button 
-                className="cart__item-remove" 
-                onClick={() => handleRemove(item._id)}
-              >
+              <button className="cart__item-remove" onClick={() => handleRemove(item._id)}>
                 <MdDelete />
                 <span className="cart__item-remove-ripple" />
               </button>
@@ -131,7 +116,7 @@ const Cart = () => {
           ))}
         </div>
 
-        <div className="cart__footer">
+        <footer className="cart__footer">
           <div className="cart__total">
             <span className="cart__total-label">Total Amount</span>
             <strong className="cart__total-value">EGP {getTotalPrice().toFixed(2)}</strong>
@@ -147,7 +132,7 @@ const Cart = () => {
               <div className="cart__checkout-shine" />
             </button>
           </div>
-        </div>
+        </footer>
       </div>
     </div>
   )
