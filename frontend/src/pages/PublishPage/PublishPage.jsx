@@ -8,6 +8,7 @@ import "./PublishPage.scss";
 const PublishPage = () => {
   const { fetchNewspaper, newspapers } = useNewspaperStore();
   const [loading, setLoading] = useState(true);
+  const [hoveredCard, setHoveredCard] = useState(null);
 
   useEffect(() => {
     const load = async () => {
@@ -18,34 +19,77 @@ const PublishPage = () => {
   }, [fetchNewspaper]);
 
   return (
-    <div className="publish-page">
-      <div className="page-header">
-        <FaNewspaper className="news-icon" />
-        <div>
-          <h1>Latest News</h1>
-          <p className="subtitle">Stay updated with the newest articles</p>
-        </div>
+    <div className="publish">
+      <div className="publish__bg">
+        <div className="publish__orb publish__orb--1" />
+        <div className="publish__orb publish__orb--2" />
+        <div className="publish__grid" />
       </div>
 
-      {loading && <p className="loading">Loading news...</p>}
+      <div className="publish__wrap">
+        <header className="publish__header">
+          <div className="publish__badge">
+            <FaNewspaper className="publish__badge-icon" />
+            <span className="publish__badge-pulse" />
+          </div>
+          <div className="publish__header-text">
+            <h1 className="publish__title">Latest News</h1>
+            <p className="publish__subtitle">Stay updated with the newest articles</p>
+          </div>
+          <div className="publish__count">
+            <span className="publish__count-num">{newspapers.length}</span>
+            <span className="publish__count-label">articles</span>
+          </div>
+        </header>
 
-      {!loading && newspapers.length > 0 && (
-        <div className="post-grid">
-          {newspapers.map((newspaper) => (
-            <Post key={newspaper._id} newspaper={newspaper} />
-          ))}
-        </div>
-      )}
+        {loading && (
+          <div className="publish__loader">
+            <div className="publish__loader-ring">
+              <div />
+              <div />
+              <div />
+              <div />
+            </div>
+            <p className="publish__loader-text">Loading news...</p>
+          </div>
+        )}
 
-      {!loading && newspapers.length === 0 && (
-        <div className="empty-state">
-          <h2>No news articles found</h2>
-          <p>You can add your first article below.</p>
-          <Link to="/create" className="create-btn">
-            Create Article
-          </Link>
-        </div>
-      )}
+        {!loading && newspapers.length > 0 && (
+          <div className="publish__grid-posts">
+            {newspapers.map((newspaper, index) => (
+              <div
+                key={newspaper._id}
+                className="publish__post-wrap"
+                style={{ animationDelay: `${0.08 * index}s` }}
+                onMouseEnter={() => setHoveredCard(newspaper._id)}
+                onMouseLeave={() => setHoveredCard(null)}
+              >
+                <div className={`publish__post-glow ${hoveredCard === newspaper._id ? 'publish__post-glow--active' : ''}`} />
+                <Post newspaper={newspaper} />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {!loading && newspapers.length === 0 && (
+          <div className="publish__empty">
+            <div className="publish__empty-illustration">
+              <div className="publish__empty-paper">📰</div>
+              <div className="publish__empty-dots">
+                <span />
+                <span />
+                <span />
+              </div>
+            </div>
+            <h2 className="publish__empty-title">No articles yet</h2>
+            <p className="publish__empty-text">Be the first to publish something amazing</p>
+            <Link to="/create" className="publish__empty-btn">
+              <span className="publish__empty-btn-icon">✨</span>
+              <span>Create Article</span>
+            </Link>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

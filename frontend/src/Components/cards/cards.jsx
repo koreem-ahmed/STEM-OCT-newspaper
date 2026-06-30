@@ -1,30 +1,40 @@
+import './cards.scss'
+
 const Card = ({ title, imgUrl, description, url, source, author, publishedAt }) => {
   return (
-    <div className="mt-10 everything-card">
-      <div className="flex-wrap gap-1 p-5 mb-1">
-        <b className="title">{title}</b>
-        <div className="mx-auto">
-          <img className="everything-card-img" src={imgUrl} alt={title} />
+    <div className="news-card">
+      {imgUrl && (
+        <div className="news-card__img-wrap">
+          <img className="news-card__img" src={imgUrl} alt={title} />
         </div>
-      </div>
+      )}
 
-      <div className="description">
-        <p className="leading-7 description-text">
-          {description?.substring(0, 200)}
-        </p>
-      </div>
+      <div className="news-card__body">
+        <h3 className="news-card__title">{title}</h3>
 
-      <div className="info">
-        <div className="flex items-center gap-2">
-          <span className="font-semibold">Source:</span>
-          <a href={url} target="_blank" rel="noreferrer" className="underline break-words link">
-            {source?.substring(0, 70)}
-          </a>
-        </div>
+        {description && (
+          <p className="news-card__desc">{description.substring(0, 200)}</p>
+        )}
 
-        <div className="flex flex-col">
-          <p><span className="font-semibold">Author:</span> {author}</p>
-          <p><span className="font-semibold">Published At:</span> {publishedAt}</p>
+        <div className="news-card__meta">
+          <div className="news-card__source">
+            <span className="news-card__label">Source:</span>
+            <a href={url} target="_blank" rel="noreferrer" className="news-card__link">
+              {source?.substring(0, 70)}
+            </a>
+          </div>
+
+          {author && (
+            <p className="news-card__author">
+              <span className="news-card__label">Author:</span> {author}
+            </p>
+          )}
+
+          {publishedAt && (
+            <p className="news-card__date">
+              <span className="news-card__label">Published:</span> {publishedAt}
+            </p>
+          )}
         </div>
       </div>
     </div>

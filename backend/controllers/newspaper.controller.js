@@ -1,59 +1,88 @@
-const Newspaper = require("../models/newspaper.model.js");
-const mongoose = require("mongoose");
+const { db } = require("../.config/firebase");
+const {
+  collection,
+  doc,
+  getDocs,
+  getDoc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  orderBy,
+  Timestamp
+} = require("firebase/firestore");
+
+const COLLECTION = "newspapers";
 
 const getNewspapers = async (req, res) => {
   try {
-    const newspapers = await Newspaper.find();
+    const q = query(collection(db, COLLECTION), orderBy("createdAt", "desc"));
+    const snapshot = await getDocs(q);
+    const newspapers = snapshot.docs.map((d) => ({ _id: d.id, ...d.data() }));
     res.status(200).json({ success: true, newspapers });
   } catch (error) {
-    console.error("Error in fetching newspapers:", error.message);
+    console.error("Error fetching newspapers:", error.message);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
 
-
 const createNewspaper = async (req, res) => {
-  const newspaper = req.body;
+  const { name, price, date, image } = req.body;
 
-  if (!newspaper.name || !newspaper.price || !newspaper.date || !newspaper.image) {
+  if (!name || !price || !date || !image) {
     return res.status(400).json({
       success: false,
-      message: "Please provide all fields (name, price, date, image)",
+      message: "Please provide all fields (name, price, date, image)"
     });
   }
 
-  const newNewspaper = new Newspaper(newspaper);
-
   try {
-    await newNewspaper.save();
+    const docRef = await addDoc(collection(db, COLLECTION), {
+      name,
+      price: Number(price),
+      date,
+      image,
+      createdAt: Timestamp.now()
+    });
+
+    const newDoc = await getDoc(docRef);
+
     res.status(201).json({
       success: true,
       message: "Newspaper created successfully",
-      newspaper: newNewspaper,
+      newspaper: { _id: docRef.id, ...newDoc.data() }
     });
   } catch (error) {
-    console.error("Error in creating newspaper:", error.message);
+    console.error("Error creating newspaper:", error.message);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
 
 const updateNewspaper = async (req, res) => {
   const { id } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res
-      .status(404)
-      .json({ success: false, message: "Invalid Newspaper ID" });
-  }
+  const { name, price, date, image } = req.body;
 
   try {
-    const updatedNewspaper = await Newspaper.findByIdAndUpdate(id, req.body, {
-      new: true,
-    });
+    const docRef = doc(db, COLLECTION, id);
+    const snap = await getDoc(docRef);
 
-    res.status(200).json({ success: true, data: updatedNewspaper });
+    if (!snap.exists()) {
+      return res.status(404).json({ success: false, message: "Newspaper not found" });
+    }
+
+    const updates = {};
+    if (name !== undefined) updates.name = name;
+    if (price !== undefined) updates.price = Number(price);
+    if (date !== undefined) updates.date = date;
+    if (image !== undefined) updates.image = image;
+
+    await updateDoc(docRef, updates);
+
+    const updated = await getDoc(docRef);
+
+    res.status(200).json({ success: true, data: { _id: id, ...updated.data() } });
   } catch (error) {
-    console.error("Error in updating newspaper:", error.message);
+    console.error("Error updating newspaper:", error.message);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
@@ -61,24 +90,19 @@ const updateNewspaper = async (req, res) => {
 const deleteNewspaper = async (req, res) => {
   const { id } = req.params;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res
-      .status(404)
-      .json({ success: false, message: "Invalid Newspaper ID" });
-  }
-
   try {
-    const deletedItem = await Newspaper.findByIdAndDelete(id);
+    const docRef = doc(db, COLLECTION, id);
+    const snap = await getDoc(docRef);
 
-    if (!deletedItem) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Newspaper not found" });
+    if (!snap.exists()) {
+      return res.status(404).json({ success: false, message: "Newspaper not found" });
     }
+
+    await deleteDoc(docRef);
 
     res.status(200).json({ success: true, message: "Newspaper deleted" });
   } catch (error) {
-    console.error("Error in deleting newspaper:", error.message);
+    console.error("Error deleting newspaper:", error.message);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
@@ -87,5 +111,5 @@ module.exports = {
   getNewspapers,
   createNewspaper,
   updateNewspaper,
-  deleteNewspaper,
+  deleteNewspaper
 };

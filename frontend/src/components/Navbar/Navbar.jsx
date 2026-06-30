@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useAuthContext } from '../../context/AuthContext'
 import { useLogout } from '../../hooks/useLogout'
-import { useCartStore } from '../../store/Cart'
+import { useCartStore } from '../Cart/Cart.jsx'
 import './Navbar.scss'
 
 const Navbar = () => {
@@ -12,34 +12,27 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <Link to="/" className="navbar__logo">
-        <h2>📰 Newspaper Store</h2>
+        <h2>NewsPress</h2>
       </Link>
 
       <div className="navbar__links">
+        <Link to="/publish" className="navbar__link">Browse</Link>
+
         {user ? (
           <>
             <span className="navbar__email">{user.email}</span>
-            <button className="navbar__logout" onClick={logout}>
-              Logout
-            </button>
+            <button className="navbar__logout" onClick={logout}>Logout</button>
           </>
         ) : (
           <>
             <Link to="/login" className="navbar__link">Login</Link>
-            <Link to="/signup" className="navbar__link">Signup</Link>
+            <Link to="/signup" className="navbar__link">Sign Up</Link>
           </>
         )}
 
         <Link to="/cart" className="navbar__cart">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="28"
-            height="28"
-            fill="currentColor"
-            viewBox="0 0 16 16"
-            className="navbar__cart-icon"
-          >
-            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5z" />
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="navbar__cart-icon">
+            <path d="M2.25 2.25a.75.75 0 0 0 0 1.5h1.386c.17 0 .318.114.362.278l2.558 9.592a3.752 3.752 0 0 0-2.806 3.63c0 .414.336.75.75.75h15.75a.75.75 0 0 0 0-1.5H5.378A2.25 2.25 0 0 1 7.5 15h11.218a.75.75 0 0 0 .674-.421 60.358 60.358 0 0 0 2.96-7.228.75.75 0 0 0-.525-.965A60.864 60.864 0 0 0 5.68 4.509l-.232-.867A1.875 1.875 0 0 0 3.636 2.25H2.25ZM3.75 20.25a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0ZM16.5 20.25a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Z" />
           </svg>
           {cartCount > 0 && (
             <span className="navbar__cart-count">{cartCount}</span>

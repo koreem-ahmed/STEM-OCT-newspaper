@@ -1,33 +1,38 @@
-import { useState } from 'react'
-import { useAuthContext } from '../context/AuthContext'
+import { useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../lib/firebase";
+import { useAuthContext } from "../context/AuthContext";
 
 export const useLogin = () => {
-  const [error, setError] = useState(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const { dispatch } = useAuthContext()
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { dispatch } = useAuthContext();
 
   const login = async (email, password) => {
-    setIsLoading(true)
-    setError(null)
+    setIsLoading(true);
+    setError(null);
 
-    const response = await fetch('/api/user/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    })
+    try {
+      const credential = await signInWithEmailAndPassword(auth, email, password);
+      const token = await credential.user.getIdToken();
+      const user = { email, token };
 
-    const json = await response.json()
-
-    if (!response.ok) {
-      setIsLoading(false)
-      setError(json.error)
+      localStorage.setItem("user", JSON.stringify(user));
+      dispatch({ type: "LOGIN", payload: user });
+      setIsLoading(false);
+      return true;
+    } catch (err) {
+      setIsLoading(false);
+      const msg =
+        err.code === "auth/invalid-credential" || err.code === "auth/user-not-found"
+          ? "Invalid email or password"
+          : err.code === "auth/invalid-email"
+          ? "Invalid email"
+          : "Login failed";
+      setError(msg);
+      return false;
     }
-    if (response.ok) {
-      localStorage.setItem('user', JSON.stringify(json))
-      dispatch({ type: 'LOGIN', payload: json })
-      setIsLoading(false)
-    }
-  }
+  };
 
-  return { login, isLoading, error }
-}
+  return { login, isLoading, error };
+};

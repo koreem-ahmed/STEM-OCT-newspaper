@@ -2,12 +2,10 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const express = require("express");
-const connectDB = require("./.config/db.js");
 const cors = require("cors");
 const axios = require("axios");
 
 const newspaperRoutes = require("./routes/newspaper.route.js");
-const userRoutes = require("./routes/user.js");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -22,7 +20,6 @@ app.use(cors({
 app.use(express.json());
 
 app.use("/api/products/newspapers", newspaperRoutes);
-app.use("/api/user", userRoutes);
 
 function fetchNews(url, res) {
   axios.get(url)
@@ -63,7 +60,6 @@ app.get("/country/:iso", (req, res) => {
   fetchNews(url, res);
 });
 
-connectDB();
 app.listen(PORT, () => {
   console.log("Server running on port", PORT);
 });

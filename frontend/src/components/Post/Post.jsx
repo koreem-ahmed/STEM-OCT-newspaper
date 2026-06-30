@@ -5,9 +5,12 @@ import { useCartStore } from '../../store/Cart.js'
 import { toast } from 'sonner'
 import './Post.scss'
 
+const FALLBACK_IMG = 'https://placehold.co/300x200/e2e8f0/64748b?text=No+Image'
+
 const Post = ({ newspaper }) => {
   const { deleteNewspaper, updateNewspaper } = useNewspaperStore()
   const { addToCart } = useCartStore()
+  const [imgError, setImgError] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [editData, setEditData] = useState({
     name: newspaper.name,
@@ -39,7 +42,7 @@ const Post = ({ newspaper }) => {
 
   if (isEditing) {
     return (
-      <div className="Border_div">
+      <div className="post-card">
         <input
           className="edit-input"
           value={editData.name}
@@ -65,26 +68,22 @@ const Post = ({ newspaper }) => {
           value={editData.date}
           onChange={(e) => setEditData({ ...editData, date: e.target.value })}
         />
-        <div className="Buttons_div">
-          <button className="edit save" onClick={handleSave}>
-            <MdCheck />
-          </button>
-          <button className="delete" onClick={() => setIsEditing(false)}>
-            ✕
-          </button>
+        <div className="actions">
+          <button className="save" onClick={handleSave}><MdCheck /></button>
+          <button className="delete" onClick={() => setIsEditing(false)}>✕</button>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="Border_div">
-      <h1>{newspaper.name}</h1>
-      <img src={newspaper.image} alt={newspaper.name} />
+    <div className="post-card">
+      <h3>{newspaper.name}</h3>
+      <img src={imgError ? FALLBACK_IMG : newspaper.image} alt={newspaper.name} onError={() => setImgError(true)} />
       <div className="price">EGP {newspaper.price}</div>
       <div className="date">{newspaper.date}</div>
 
-      <div className="Buttons_div">
+      <div className="actions">
         <button className="add-cart" onClick={handleAddToCart} title="Add to cart">
           <MdAddShoppingCart />
         </button>

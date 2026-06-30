@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useLogin } from '../../hooks/useLogin'
 import { Link, useNavigate } from 'react-router-dom'
-import '../../pages/LoginSignup/LoginSignup.scss'
+import './LoginSignup.scss'
 
 const Login = () => {
   const [email, setEmail] = useState('')
@@ -11,35 +11,44 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    await login(email, password)
-    if (!error) navigate('/')
+    const success = await login(email, password)
+    if (success) navigate('/')
   }
 
   return (
-    <form className="login" onSubmit={handleSubmit}>
-      <h3>Log In</h3>
+    <div className="auth-page">
+      <div className="auth-page__bg">
+        <div className="auth-page__orb auth-page__orb--1" />
+        <div className="auth-page__orb auth-page__orb--2" />
+      </div>
 
-      <label>Email:</label>
-      <input
-        type="email"
-        onChange={(e) => setEmail(e.target.value)}
-        value={email}
-      />
+      <form className="login" onSubmit={handleSubmit}>
+        <h3>Welcome Back</h3>
 
-      <label>Password:</label>
-      <input
-        type="password"
-        onChange={(e) => setPassword(e.target.value)}
-        value={password}
-      />
+        <label>Email</label>
+        <input
+          type="email"
+          placeholder="you@example.com"
+          onChange={(e) => setEmail(e.target.value)}
+          value={email}
+        />
 
-      <button disabled={isLoading}>Log In</button>
-      {error && <div className="error">{error}</div>}
+        <label>Password</label>
+        <input
+          type="password"
+          placeholder="••••••••"
+          onChange={(e) => setPassword(e.target.value)}
+          value={password}
+        />
 
-      <p className="auth-switch">
-        Don't have an account? <Link to="/signup">Sign up</Link>
-      </p>
-    </form>
+        <button disabled={isLoading}>{isLoading ? 'Signing in...' : 'Log In'}</button>
+        {error && <div className="error">{error}</div>}
+
+        <p className="auth-switch">
+          Don't have an account? <Link to="/signup">Sign up</Link>
+        </p>
+      </form>
+    </div>
   )
 }
 
